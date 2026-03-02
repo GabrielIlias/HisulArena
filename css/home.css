@@ -484,6 +484,13 @@
   letter-spacing: 0.04em;
 }
 
+.footer-linkedin {
+  color: var(--red);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.footer-linkedin:hover { opacity: 0.75; }
+
 /* --- Responsive --- */
 @media (max-width: 960px) {
   .games-grid {
