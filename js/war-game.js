@@ -46,9 +46,8 @@ const WarGame = (() => {
       return;
     }
     // Local dev (served by server.js on :3000) → connect to same origin.
-    // Production (Vercel) → connect to the Railway Socket.io server.
-    // After deploying to Railway, paste your URL below and redeploy.
-    const RAILWAY_URL = 'https://YOUR-APP.railway.app'; // ← update after Railway deploy
+    // Production (Vercel) → connect to the Render Socket.io server.
+    const RAILWAY_URL = 'https://hisularena.onrender.com';
     const _serverUrl  = ['localhost', '127.0.0.1'].includes(window.location.hostname)
       ? ''            // same origin → http://localhost:3000
       : RAILWAY_URL;
