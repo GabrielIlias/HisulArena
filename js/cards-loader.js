@@ -8,24 +8,14 @@
 let _cardsCache = null;
 
 /**
- * Returns the path prefix based on current page location.
- * Games inside /games/ need to go up one level.
- */
-function _getBasePath() {
-  const path = window.location.pathname;
-  return path.includes('/games/') ? '../' : './';
-}
-
-/**
  * Load and cache all card data from cards.json.
- * Subsequent calls return from cache.
+ * Uses root-absolute path so it works from any page depth.
  * @returns {Promise<{eliminated: Array, alive: Array}>}
  */
 async function loadCards() {
   if (_cardsCache) return _cardsCache;
 
-  const basePath = _getBasePath();
-  const response = await fetch(`${basePath}cards.json`);
+  const response = await fetch('/cards.json');
 
   if (!response.ok) {
     throw new Error(`Failed to load cards.json: ${response.status}`);
