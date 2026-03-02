@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "vercel-build": "echo 'Static site – no build step needed'",
     "screenshot": "node scripts/screenshot.js",
     "screenshot:full": "node scripts/screenshot.js --full"
   },
