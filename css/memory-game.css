@@ -1,0 +1,483 @@
+/* ==========================================================
+   memory-game.css — HisulArena Memory Game Styles
+   Aesthetic: Classified Dossier Archive
+   3D card flip, dossier face-down, target face-up, win overlay
+   ========================================================== */
+
+/* --- Page Layout --- */
+.memory-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 16px 48px;
+  min-height: calc(100vh - 55px);
+  position: relative;
+  z-index: 1;
+}
+
+/* --- HUD Strip --- */
+.memory-hud {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 740px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeSlideDown 0.5s var(--ease-out) both;
+}
+
+.hud-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 8px;
+  position: relative;
+}
+
+/* separator lines between stats */
+.hud-stat + .hud-stat::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--border);
+}
+
+.hud-value {
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  color: var(--red);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  transition: color 0.3s var(--ease);
+}
+
+.hud-value.pulse {
+  animation: hudPulse 0.35s ease;
+}
+
+@keyframes hudPulse {
+  0%, 100% { color: var(--red); }
+  50%       { color: var(--red-hot); transform: scale(1.15); }
+}
+
+.hud-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Matches stat — turns green when all matched */
+.hud-stat.hud-matches .hud-value { color: var(--green); }
+
+/* --- Memory Grid — 5×6 for 30 cards (15 pairs) --- */
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 740px;
+  animation: fadeSlideUp 0.5s var(--ease-out) 0.15s both;
+}
+
+/* --- Memory Card Shell --- */
+.mem-card {
+  aspect-ratio: 3 / 4;
+  perspective: 900px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  animation: cardDeal 0.4s var(--ease-out) both;
+  transition: transform 0.2s var(--ease-out);
+}
+
+@keyframes cardDeal {
+  from { opacity: 0; transform: translateY(-24px) scale(0.72); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* hover lift — unflipped, unmatched only */
+@media (hover: hover) {
+  .mem-card:not(.flipped):not(.matched):hover {
+    transform: scale(1.06) translateY(-3px);
+    z-index: 2;
+  }
+}
+
+/* --- Card Inner (flips on .flipped/.matched) --- */
+.mem-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.52s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mem-card.flipped .mem-card-inner,
+.mem-card.matched .mem-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* --- Card Faces — shared --- */
+.mem-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+/* ════════════════════════════════════════
+   CARD BACK — Face-down "Classified" look
+   ════════════════════════════════════════ */
+.mem-card-back {
+  background: linear-gradient(145deg, #1d0505 0%, #0c0c0c 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+}
+
+/* Dot-matrix texture */
+.mem-card-back::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(204, 0, 0, 0.065) 1px, transparent 0);
+  background-size: 10px 10px;
+  pointer-events: none;
+}
+
+/* Red corner triangle accent */
+.mem-card-back::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 28px 28px;
+  border-color: transparent transparent rgba(204, 0, 0, 0.15) transparent;
+}
+
+.back-stamp {
+  font-family: var(--font-mono);
+  font-size: clamp(0.5rem, 1.6vw, 0.68rem);
+  color: rgba(204, 0, 0, 0.45);
+  letter-spacing: 0.2em;
+  border: 1px solid rgba(204, 0, 0, 0.18);
+  padding: 3px 7px;
+  transform: rotate(-28deg);
+  white-space: nowrap;
+  z-index: 1;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.back-icon {
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  opacity: 0.2;
+  z-index: 1;
+  filter: grayscale(1);
+}
+
+.back-num {
+  position: absolute;
+  bottom: 5px;
+  right: 7px;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: rgba(204, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Hover: faint red glow on back */
+@media (hover: hover) {
+  .mem-card:not(.flipped):not(.matched):hover .mem-card-back {
+    border-color: rgba(204, 0, 0, 0.4);
+    box-shadow: 0 0 18px rgba(204, 0, 0, 0.12);
+  }
+  .mem-card:not(.flipped):not(.matched):hover .back-stamp {
+    color: rgba(204, 0, 0, 0.7);
+    border-color: rgba(204, 0, 0, 0.35);
+  }
+}
+
+/* ════════════════════════════════════════
+   CARD FRONT — Face-up "Target Revealed"
+   ════════════════════════════════════════ */
+.mem-card-front {
+  background: var(--surface);
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 6px 10px;
+}
+
+/* Top stripe — colored by data-org on parent */
+.mem-card-front::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--red);
+  opacity: 0.6;
+}
+
+.front-org {
+  font-family: var(--font-mono);
+  font-size: clamp(0.44rem, 1.1vw, 0.58rem);
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  background: var(--red-subtle);
+  border: 1px solid rgba(204, 0, 0, 0.28);
+  color: var(--red);
+  text-align: center;
+  line-height: 1.4;
+  z-index: 1;
+}
+
+.front-emoji {
+  font-size: clamp(1.7rem, 4.5vw, 2.5rem);
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
+  z-index: 1;
+}
+
+.front-name {
+  font-size: clamp(0.65rem, 1.7vw, 0.88rem);
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.2;
+  z-index: 1;
+}
+
+/* "חוסל ✓" stamp — hidden until matched */
+.front-matched-stamp {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: clamp(0.44rem, 1.1vw, 0.58rem);
+  color: var(--green);
+  letter-spacing: 0.1em;
+  border: 1px solid var(--green);
+  padding: 1px 5px;
+  border-radius: 2px;
+  z-index: 1;
+  animation: scaleIn 0.3s var(--ease-out) both;
+}
+
+.mem-card.matched .front-matched-stamp { display: block; }
+
+/* ════════════════════════════════════════
+   MATCHED — green glow
+   ════════════════════════════════════════ */
+.mem-card.matched .mem-card-front {
+  border-color: var(--green) !important;
+  box-shadow: 0 0 16px var(--green-glow), inset 0 0 6px rgba(34, 204, 119, 0.08);
+}
+
+.mem-card.matched .mem-card-front::before {
+  background: var(--green);
+  opacity: 0.7;
+}
+
+/* Match pop animation */
+.mem-card.matched .mem-card-inner {
+  animation: matchPop 0.4s var(--ease-out);
+}
+
+@keyframes matchPop {
+  0%   { transform: rotateY(180deg) scale(1); }
+  40%  { transform: rotateY(180deg) scale(1.1); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+
+/* ════════════════════════════════════════
+   NO MATCH — red flash
+   ════════════════════════════════════════ */
+.mem-card.no-match .mem-card-front {
+  border-color: rgba(204, 0, 0, 0.6) !important;
+  animation: noMatchFlash 0.75s ease;
+}
+
+@keyframes noMatchFlash {
+  0%, 100% { box-shadow: 0 0 6px var(--red-glow); }
+  40%       { box-shadow: 0 0 22px var(--red-glow), inset 0 0 10px rgba(204,0,0,0.2); }
+}
+
+/* ════════════════════════════════════════
+   WIN OVERLAY
+   ════════════════════════════════════════ */
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.93);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  z-index: 9000;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
+  text-align: center;
+}
+
+.win-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Emoji parade */
+.win-emoji-parade {
+  display: flex;
+  gap: 10px;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.win-emoji-parade span {
+  display: inline-block;
+  animation: winPop 0.55s var(--ease-out) both;
+}
+
+.win-emoji-parade span:nth-child(1) { animation-delay: 0.05s; }
+.win-emoji-parade span:nth-child(2) { animation-delay: 0.15s; }
+.win-emoji-parade span:nth-child(3) { animation-delay: 0.25s; }
+.win-emoji-parade span:nth-child(4) { animation-delay: 0.35s; }
+.win-emoji-parade span:nth-child(5) { animation-delay: 0.45s; }
+.win-emoji-parade span:nth-child(6) { animation-delay: 0.55s; }
+.win-emoji-parade span:nth-child(7) { animation-delay: 0.65s; }
+.win-emoji-parade span:nth-child(8) { animation-delay: 0.75s; }
+
+@keyframes winPop {
+  0%   { opacity: 0; transform: scale(0.2) rotate(-25deg) translateY(30px); }
+  65%  { transform: scale(1.25) rotate(6deg) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg) translateY(0); }
+}
+
+.win-title {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  color: var(--text);
+  animation: fadeSlideDown 0.5s var(--ease-out) 0.4s both;
+}
+
+.win-subtitle {
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  color: var(--green);
+  letter-spacing: 0.12em;
+  animation: fadeSlideDown 0.5s var(--ease-out) 0.5s both;
+}
+
+.win-message {
+  font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+  color: var(--text-dim);
+  max-width: 420px;
+  line-height: 1.65;
+  animation: fadeSlideDown 0.5s var(--ease-out) 0.55s both;
+}
+
+.win-stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: scaleIn 0.4s var(--ease-out) 0.6s both;
+}
+
+.win-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px 28px;
+}
+
+.win-stat + .win-stat {
+  border-right: 1px solid var(--border);
+}
+
+.win-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.7rem;
+  color: var(--red);
+  line-height: 1;
+}
+
+.win-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.win-actions {
+  display: flex;
+  gap: 12px;
+  animation: fadeSlideUp 0.4s var(--ease-out) 0.75s both;
+}
+
+/* --- Loading State --- */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 0;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  /* Switch to 4-col on narrow screens (30 cards → 8 rows, clean) */
+  .memory-grid  { grid-template-columns: repeat(4, 1fr); gap: 7px; max-width: 100%; }
+  .memory-hud   { max-width: 100%; }
+}
+
+@media (max-width: 520px) {
+  .memory-page  { padding: 16px 12px 40px; gap: 14px; }
+  .hud-value    { font-size: 1.1rem; }
+  .hud-label    { font-size: 0.52rem; }
+  .win-stat     { padding: 12px 20px; }
+  .win-actions  { flex-direction: column; width: 100%; max-width: 280px; }
+  .win-actions .btn-primary,
+  .win-actions .btn-secondary { width: 100%; }
+}
+
+@media (max-width: 420px) {
+  /* Drop to 3-col on very small phones (30 cards → 10 rows) */
+  .memory-grid { grid-template-columns: repeat(3, 1fr); gap: 5px; }
+  .mem-card-back .back-stamp { font-size: 0.42rem; }
+}

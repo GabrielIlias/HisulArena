@@ -1,0 +1,629 @@
+/* ==========================================================
+   betting-game.css — HisulArena Betting Game Styles
+   Aesthetic: Noir Underground Sportsbook × IDF Ops Center
+   Gold (#c8a84b) primary accent, dark amber card glow
+   ========================================================== */
+
+/* ---- Page Layout ---- */
+.betting-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 24px 16px 56px;
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 55px);
+}
+
+/* ---- Betting Stats Strip ---- */
+.betting-stats {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 780px;
+  background: var(--surface);
+  border: 1px solid rgba(200, 168, 75, 0.25);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeSlideDown 0.5s var(--ease-out) both;
+}
+
+.b-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 8px;
+  border-left: 1px solid rgba(200,168,75,0.12);
+}
+.b-stat:last-child { border-left: none; }
+
+.b-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.b-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ---- Phase Label ---- */
+.phase-label {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  opacity: 0.8;
+  animation: fadeIn 0.5s var(--ease-out) 0.2s both;
+}
+
+/* ---- Target Cards Grid — always 5 targets ---- */
+.targets-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 11px;
+  width: 100%;
+  max-width: 780px;
+  animation: fadeSlideUp 0.55s var(--ease-out) 0.2s both;
+}
+
+/* ════════════════════════════════════════
+   TARGET CARD — "MOST WANTED" POSTER
+   ════════════════════════════════════════ */
+.target-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, rgba(200,168,75,0.06) 0%, var(--surface) 55%);
+  border: 1px solid rgba(200, 168, 75, 0.2);
+  border-bottom: 2px solid rgba(200, 168, 75, 0.35);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 0.28s var(--ease-out),
+    border-color 0.25s var(--ease),
+    box-shadow 0.28s var(--ease-out);
+  animation: cardDeal 0.45s var(--ease-out) both;
+}
+
+@keyframes cardDeal {
+  from { opacity: 0; transform: translateY(20px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Gold top accent line */
+.target-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.5;
+  transition: opacity 0.25s;
+}
+
+@media (hover: hover) {
+  .target-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: rgba(200, 168, 75, 0.55);
+    box-shadow: 0 0 28px var(--gold-glow), var(--shadow-md);
+  }
+  .target-card:hover::before { opacity: 1; }
+}
+
+/* Selected state — gold ring */
+.target-card.selected {
+  border: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
+  box-shadow: 0 0 36px var(--gold-glow), 0 0 6px rgba(200,168,75,0.25) inset;
+  transform: scale(1.03);
+}
+
+.target-card.selected::before { opacity: 1; }
+
+/* Radar ping from selected card */
+.target-card.selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--gold);
+  animation: radarPing 1.8s ease-out infinite;
+  pointer-events: none;
+}
+
+/* ---- Card Header Strip ---- */
+.target-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(200, 168, 75, 0.08);
+  border-bottom: 1px solid rgba(200, 168, 75, 0.12);
+}
+
+.wanted-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  opacity: 0.92;
+  text-transform: uppercase;
+}
+
+.target-odds-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: bold;
+  color: var(--gold);
+  background: rgba(200, 168, 75, 0.18);
+  border: 1px solid rgba(200, 168, 75, 0.42);
+  padding: 1px 6px;
+  border-radius: 3px;
+  transition: color 0.25s, background 0.25s;
+}
+
+/* Odds flicker animation */
+.target-odds-badge.odds-flicker {
+  animation: oddsFlicker 0.35s ease;
+}
+@keyframes oddsFlicker {
+  0%, 100% { opacity: 1; color: var(--gold); }
+  40%       { opacity: 0.3; color: var(--text-muted); }
+}
+
+/* ---- Card Body ---- */
+.target-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 5px;
+  padding: 12px 10px 8px;
+}
+
+.target-emoji {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  line-height: 1;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+  transition: transform 0.28s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .target-card:hover .target-emoji { transform: scale(1.1); }
+}
+.target-card.selected .target-emoji { transform: scale(1.12); }
+
+.target-name {
+  font-size: clamp(0.82rem, 1.8vw, 1rem);
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.target-org {
+  font-family: var(--font-mono);
+  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
+  color: var(--red);
+  letter-spacing: 0.07em;
+}
+
+.target-desc {
+  font-size: clamp(0.62rem, 1.3vw, 0.72rem);
+  color: var(--text-muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Fake probability bar */
+.target-prob-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.target-prob-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold-subtle), var(--gold));
+  transition: width 0.6s var(--ease-out);
+}
+
+/* ---- Card Footer (select indicator) ---- */
+.target-footer {
+  padding: 7px 10px;
+  border-top: 1px solid rgba(200,168,75,0.15);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: rgba(200,168,75,0.55);
+  letter-spacing: 0.06em;
+  transition: color 0.25s, background 0.25s;
+}
+
+@media (hover: hover) {
+  .target-card:hover .target-footer {
+    color: var(--gold);
+    background: rgba(200,168,75,0.06);
+  }
+}
+
+.target-card.selected .target-footer {
+  color: var(--gold);
+  background: rgba(200,168,75,0.1);
+  font-weight: bold;
+}
+
+/* ════════════════════════════════════════
+   BET BUTTON — Big gold CTA
+   ════════════════════════════════════════ */
+.bet-btn {
+  width: 100%;
+  max-width: 560px;
+  padding: 17px 32px;
+  background: linear-gradient(135deg, #7a5d18 0%, var(--gold) 50%, #d4b860 100%);
+  color: #0d0a04;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.05rem;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out),
+    opacity 0.25s;
+  animation: fadeSlideUp 0.5s var(--ease-out) 0.4s both;
+}
+
+/* Shimmer overlay */
+.bet-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg,
+    transparent 30%,
+    rgba(255,255,255,0.18) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.bet-btn:not(:disabled):hover::before {
+  transform: translateX(100%);
+}
+
+.bet-btn:not(:disabled):hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 0 48px var(--gold-glow), 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.bet-btn:not(:disabled):active {
+  transform: translateY(0) scale(0.99);
+}
+
+.bet-btn:disabled {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ════════════════════════════════════════
+   DRUM-ROLL OVERLAY — The Big Moment
+   ════════════════════════════════════════ */
+.drumroll-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease);
+}
+
+.drumroll-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.drumroll-box {
+  background: var(--surface);
+  border: 1px solid rgba(200, 168, 75, 0.45);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px 28px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 0 80px rgba(200,168,75,0.15),
+    0 0 160px rgba(200,168,75,0.06),
+    var(--shadow-lg);
+  animation: drumrollPop 0.4s var(--ease-out);
+}
+
+@keyframes drumrollPop {
+  from { transform: scale(0.82) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.drumroll-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+/* Ticker display box */
+.ticker-display {
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid rgba(200, 168, 75, 0.2);
+  border-radius: var(--radius-lg);
+  background:
+    repeating-linear-gradient(0deg, transparent 2px, rgba(200,168,75,0.02) 3px),
+    rgba(200, 168, 75, 0.04);
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Corners on ticker box */
+.ticker-display::before,
+.ticker-display::after {
+  content: '+';
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: rgba(200,168,75,0.3);
+  line-height: 1;
+}
+.ticker-display::before { top: 4px; right: 8px; }
+.ticker-display::after  { bottom: 4px; left: 8px; }
+
+#ticker-emoji {
+  font-size: 3.2rem;
+  line-height: 1;
+  transition: opacity 0.06s, transform 0.06s;
+  filter: drop-shadow(0 0 12px rgba(200,168,75,0.3));
+}
+
+#ticker-name {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  transition: opacity 0.06s;
+}
+
+/* Final state */
+.ticker-display.final {
+  border-color: var(--gold);
+  box-shadow: 0 0 30px var(--gold-glow);
+  background: rgba(200,168,75,0.07);
+}
+
+.ticker-display.final #ticker-emoji {
+  animation: finalEmojiPop 0.6s var(--ease-out);
+}
+
+.ticker-display.final #ticker-name {
+  color: var(--gold);
+  text-shadow: 0 0 16px var(--gold-glow);
+}
+
+@keyframes finalEmojiPop {
+  0%   { transform: scale(0.3) rotate(-10deg); opacity: 0.3; }
+  55%  { transform: scale(1.3) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Bouncing dots */
+.drumroll-dots {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.drumroll-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.5;
+  animation: dotBounce 0.8s ease-in-out infinite;
+}
+.drumroll-dots span:nth-child(2) { animation-delay: 0.17s; }
+.drumroll-dots span:nth-child(3) { animation-delay: 0.34s; }
+
+@keyframes dotBounce {
+  0%, 100% { transform: translateY(0);   opacity: 0.4; }
+  50%       { transform: translateY(-6px); opacity: 1; }
+}
+
+.drumroll-dots.hidden { opacity: 0; pointer-events: none; }
+
+/* Result panel (slides up inside drumroll box) */
+.drumroll-result {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
+}
+.drumroll-result.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.result-icon { font-size: 2.8rem; margin-bottom: 8px; }
+
+.result-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+.result-title.hit  { color: var(--gold); text-shadow: 0 0 16px var(--gold-glow); }
+.result-title.miss { color: var(--text-dim); }
+
+.result-subtitle {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+.result-subtitle strong { color: var(--text); }
+
+.result-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ════════════════════════════════════════
+   HISTORY PANEL
+   ════════════════════════════════════════ */
+.history-panel {
+  width: 100%;
+  max-width: 780px;
+  animation: fadeSlideUp 0.5s var(--ease-out) 0.5s both;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.history-title {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--gold);
+  letter-spacing: 0.14em;
+  opacity: 0.8;
+}
+
+.btn-clear-history {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.btn-clear-history:hover {
+  color: var(--red);
+  border-color: rgba(204,0,0,0.4);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  animation: fadeSlideRight 0.35s var(--ease-out) both;
+  transition: border-color 0.2s;
+}
+
+.history-entry.hit  { border-color: rgba(200,168,75,0.28); }
+.history-entry.miss { opacity: 0.7; }
+
+.history-icon { font-size: 1rem; flex-shrink: 0; }
+
+.history-text {
+  flex: 1;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+.history-text strong { color: var(--text); }
+
+.history-date {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.no-history {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius);
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════ */
+@media (max-width: 700px) {
+  /* 5 cols is tight: drop to 3+2 on tablets */
+  .targets-grid { grid-template-columns: repeat(3, 1fr); gap: 9px; }
+}
+
+@media (max-width: 560px) {
+  /* On phones: 2 columns (3+2) */
+  .targets-grid  { grid-template-columns: repeat(2, 1fr); gap: 9px; }
+  .betting-page  { padding: 16px 12px 48px; gap: 16px; }
+  .drumroll-box  { padding: 28px 20px 20px; max-width: 100%; }
+  .result-actions { flex-direction: column; }
+  .result-actions .btn-primary,
+  .result-actions .btn-secondary { width: 100%; }
+  .bet-btn { font-size: 0.95rem; padding: 14px 24px; }
+}
+
+@media (max-width: 360px) {
+  .targets-grid { gap: 7px; }
+  #ticker-name  { font-size: 1rem; }
+}

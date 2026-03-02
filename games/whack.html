@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#e85d04" />
+  <meta name="description" content="חיסול מהיר – Whack-a-Mole | חיסול ארנה" />
+  <link rel="manifest" href="../manifest.json" />
+  <link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=Rubik+Mono+One&family=VT323&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+  <link rel="stylesheet" href="../css/whack-game.css" />
+
+  <title>חיסול מהיר | חיסול ארנה</title>
+</head>
+<body>
+
+  <!-- Background dot grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- ─── Game Header ─── -->
+  <header class="game-header" role="banner">
+
+    <a href="../index.html" class="btn-back" aria-label="חזרה לדף הבית">
+      <span class="btn-back-arrow">→</span>
+      <span>חזרה</span>
+    </a>
+
+    <div class="game-header-title">
+      <span class="game-header-icon" aria-hidden="true">🪓</span>
+      <span>חיסול מהיר</span>
+    </div>
+
+    <button
+      class="btn-back"
+      id="restart-btn"
+      aria-label="התחל משחק מחדש"
+    >
+      <span aria-hidden="true">🔄</span>
+      <span>מחדש</span>
+    </button>
+
+  </header>
+
+  <!-- ─── Main Game Area ─── -->
+  <main class="whack-page" role="main">
+
+    <!-- HUD Strip -->
+    <div class="whack-hud" role="status" aria-live="polite" aria-label="לוח ניקוד">
+
+      <div class="whack-hud-cell">
+        <span class="whack-timer" id="whack-timer" aria-label="זמן נותר">60</span>
+        <span class="whack-hud-label">שניות</span>
+      </div>
+
+      <div class="whack-hud-cell">
+        <span class="whack-score-num" id="whack-score" aria-label="ניקוד">0</span>
+        <span class="whack-hud-label">ניקוד</span>
+      </div>
+
+      <div class="whack-hud-cell">
+        <span class="whack-hits-num" aria-label="חיסולים">
+          <span id="whack-hits">0</span>/<span id="whack-total">0</span>
+        </span>
+        <span class="whack-hud-label">חיסולים</span>
+      </div>
+
+    </div>
+
+    <!-- Phase label -->
+    <p class="whack-phase-label" aria-hidden="true">// מנהרות חמאס — חסל לפני שמסתתרים //</p>
+
+    <!-- 3×3 Holes Arena (populated by JS) -->
+    <div
+      class="holes-arena"
+      id="holes-arena"
+      role="grid"
+      aria-label="רשת מנהרות"
+    ></div>
+
+  </main>
+
+  <!-- ─── Start Overlay ─── -->
+  <div
+    class="whack-start-overlay show"
+    id="start-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="start-title"
+  >
+    <div class="whack-overlay-box">
+
+      <div class="overlay-icon" aria-hidden="true">🪓</div>
+
+      <h2 class="overlay-title" id="start-title">חיסול מהיר</h2>
+
+      <p class="overlay-desc">
+        טרוריסטים קופצים מהמנהרות — לחץ עליהם לפני שמסתתרים בחזרה!
+      </p>
+
+      <ul class="rules-list" aria-label="חוקי המשחק">
+        <li>⏱ 60 שניות של אדרנלין</li>
+        <li>👆 לחץ על קלף = +100 ניקוד</li>
+        <li>💨 מחמיצים = ירידה חזרה לחור</li>
+        <li>🔥 ככל שנשאר פחות זמן — מהיר יותר!</li>
+      </ul>
+
+      <button
+        class="btn-primary btn-xl"
+        id="start-btn"
+        aria-label="התחל משחק"
+      >
+        🎯 יאלה נתחיל!
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ─── End Overlay ─── -->
+  <div
+    class="whack-end-overlay"
+    id="end-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="end-title"
+    aria-live="assertive"
+  >
+    <div class="whack-overlay-box">
+
+      <div class="overlay-icon" id="end-icon" aria-hidden="true">🎯</div>
+
+      <h2 class="overlay-title" id="end-title">המשחק נגמר!</h2>
+
+      <!-- End stats panel -->
+      <div class="end-stats" role="status" aria-label="תוצאות המשחק">
+        <div class="end-stat">
+          <span class="end-stat-val" id="end-score">0</span>
+          <span class="end-stat-label">ניקוד</span>
+        </div>
+        <div class="end-stat">
+          <span class="end-stat-val" id="end-hits">0</span>
+          <span class="end-stat-label">פגיעות</span>
+        </div>
+        <div class="end-stat">
+          <span class="end-stat-val" id="end-total">0</span>
+          <span class="end-stat-label">הופיעו</span>
+        </div>
+      </div>
+
+      <p class="end-message" id="end-message" aria-live="polite"></p>
+
+      <div class="overlay-actions">
+        <button
+          class="btn-primary"
+          onclick="WhackGame.restart()"
+          aria-label="שחק שוב"
+        >
+          🔄 שחק שוב
+        </button>
+        <a
+          href="../index.html"
+          class="btn-secondary"
+          aria-label="חזרה לתפריט הראשי"
+        >
+          ← תפריט ראשי
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── Scripts ─── -->
+  <script src="../js/cards-loader.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/whack-game.js"></script>
+
+</body>
+</html>

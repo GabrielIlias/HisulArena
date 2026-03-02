@@ -1,0 +1,23 @@
+{
+  "name": "hisularena",
+  "version": "0.1.0",
+  "description": "HisulArena – IDF elimination mini-games PWA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "screenshot": "node scripts/screenshot.js",
+    "screenshot:full": "node scripts/screenshot.js --full"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "puppeteer": "^21.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["pwa", "games", "hebrew", "humor"],
+  "license": "MIT"
+}

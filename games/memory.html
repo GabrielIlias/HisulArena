@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#cc0000" />
+  <meta name="description" content="משחק זיכרון – מצא זוגות של מחוסלים | חיסול ארנה" />
+  <link rel="manifest" href="../manifest.json" />
+  <link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=VT323&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+  <link rel="stylesheet" href="../css/memory-game.css" />
+
+  <title>משחק זיכרון | חיסול ארנה</title>
+</head>
+<body>
+
+  <!-- Background dot grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- ─── Game Header ─── -->
+  <header class="game-header" role="banner">
+
+    <a href="../index.html" class="btn-back" aria-label="חזרה לדף הבית">
+      <span class="btn-back-arrow">→</span>
+      <span>חזרה</span>
+    </a>
+
+    <div class="game-header-title">
+      <span class="game-header-icon" aria-hidden="true">🧠</span>
+      <span>משחק זיכרון</span>
+    </div>
+
+    <button
+      class="btn-back"
+      onclick="MemoryGame.restart()"
+      aria-label="התחל משחק מחדש"
+    >
+      <span aria-hidden="true">🔄</span>
+      <span>מחדש</span>
+    </button>
+
+  </header>
+
+  <!-- ─── Main Game Area ─── -->
+  <main class="memory-page" role="main">
+
+    <!-- HUD: Time / Moves / Pairs -->
+    <div class="memory-hud" role="status" aria-live="polite" aria-label="לוח ניקוד">
+      <div class="hud-stat">
+        <span class="hud-value mono" id="timer" aria-label="זמן משחק">00:00</span>
+        <span class="hud-label">זמן</span>
+      </div>
+      <div class="hud-stat">
+        <span class="hud-value" id="moves" aria-label="מספר תנועות">0</span>
+        <span class="hud-label">תנועות</span>
+      </div>
+      <div class="hud-stat hud-matches">
+        <span class="hud-value" aria-label="זוגות שנמצאו">
+          <span id="matches">0</span>/<span id="total-pairs">15</span>
+        </span>
+        <span class="hud-label">זוגות</span>
+      </div>
+    </div>
+
+    <!-- Loading state (shown until cards load) -->
+    <div class="loading-state" id="loading-state" role="status" aria-label="טוען קלפים">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="mono text-dim" style="font-size:0.9rem">טוען קלפי מחוסלים...</p>
+    </div>
+
+    <!-- Memory Grid (populated by JS) -->
+    <div
+      class="memory-grid"
+      id="memory-grid"
+      role="grid"
+      aria-label="לוח קלפי זיכרון"
+      style="display:none"
+    ></div>
+
+    <!-- Instructions (hidden after first click) -->
+    <p
+      class="mono text-muted"
+      id="instructions"
+      style="font-size:0.72rem; letter-spacing:0.05em; text-align:center;"
+    >
+      לחץ על קלף להפיכה • מצא זוגות תואמים • הטיימר מתחיל בלחיצה הראשונה
+    </p>
+
+  </main>
+
+  <!-- ─── Win Overlay ─── -->
+  <div
+    class="win-overlay"
+    id="win-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="win-title"
+  >
+    <!-- Emoji parade populated by JS from matched cards -->
+    <div class="win-emoji-parade" aria-hidden="true"></div>
+
+    <h2 class="win-title" id="win-title">כל המחוסלים זוהו!</h2>
+    <p class="win-subtitle">// MISSION COMPLETE //</p>
+
+    <p class="win-message" id="win-message">מוח כמו ביון!</p>
+
+    <div class="win-stats" aria-label="תוצאות המשחק">
+      <div class="win-stat">
+        <span class="win-stat-value" id="win-moves">0</span>
+        <span class="win-stat-label">תנועות</span>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat-value" id="win-time">00:00</span>
+        <span class="win-stat-label">זמן</span>
+      </div>
+    </div>
+
+    <div class="win-actions">
+      <button
+        class="btn-primary"
+        onclick="MemoryGame.restart()"
+        aria-label="שחק שוב"
+      >
+        🔄 שחק שוב
+      </button>
+      <a
+        href="../index.html"
+        class="btn-secondary"
+        aria-label="חזרה לתפריט הראשי"
+      >
+        ← תפריט ראשי
+      </a>
+    </div>
+  </div>
+
+  <!-- ─── Scripts ─── -->
+  <script src="../js/cards-loader.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/memory-game.js"></script>
+
+  <script>
+    /* Show grid after cards load, hide instructions on first interaction */
+    const _origInit = MemoryGame.init;
+    document.addEventListener('DOMContentLoaded', () => {
+      const grid    = document.getElementById('memory-grid');
+      const loading = document.getElementById('loading-state');
+
+      // Observer: when loading is hidden, show grid
+      const obs = new MutationObserver(() => {
+        if (loading.style.display === 'none') {
+          grid.style.display = 'grid';
+          obs.disconnect();
+        }
+      });
+      obs.observe(loading, { attributes: true, attributeFilter: ['style'] });
+
+      // Hide instructions after first card click
+      grid.addEventListener('click', () => {
+        const instr = document.getElementById('instructions');
+        if (instr) {
+          instr.style.transition = 'opacity 0.4s';
+          instr.style.opacity = '0';
+          setTimeout(() => instr.remove(), 500);
+        }
+      }, { once: true });
+    });
+  </script>
+
+</body>
+</html>

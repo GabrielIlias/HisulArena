@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#cc0000" />
+  <meta name="description" content="הימורים – מי הבא בתור? | חיסול ארנה" />
+  <link rel="manifest" href="../manifest.json" />
+  <link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=VT323&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+  <link rel="stylesheet" href="../css/betting-game.css" />
+
+  <title>הימורים | חיסול ארנה</title>
+</head>
+<body>
+
+  <!-- Background dot grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- ─── Game Header ─── -->
+  <header class="game-header" role="banner">
+
+    <a href="../index.html" class="btn-back" aria-label="חזרה לדף הבית">
+      <span class="btn-back-arrow">→</span>
+      <span>חזרה</span>
+    </a>
+
+    <div class="game-header-title">
+      <span class="game-header-icon" aria-hidden="true">🎰</span>
+      <span>הימורים</span>
+    </div>
+
+    <button
+      class="btn-back"
+      onclick="BettingGame.clearHistory()"
+      aria-label="נקה היסטוריה"
+      title="נקה היסטוריית הימורים"
+    >
+      <span aria-hidden="true">🗑</span>
+      <span>נקה</span>
+    </button>
+
+  </header>
+
+  <!-- ─── Main Game Area ─── -->
+  <main class="betting-page" role="main">
+
+    <!-- Stats strip -->
+    <div class="betting-stats" role="status" aria-live="polite" aria-label="סטטיסטיקות הימורים">
+      <div class="b-stat">
+        <span class="b-stat-value" id="stat-total">0</span>
+        <span class="b-stat-label">הימורים</span>
+      </div>
+      <div class="b-stat">
+        <span class="b-stat-value" id="stat-hits">0</span>
+        <span class="b-stat-label">פגיעות</span>
+      </div>
+      <div class="b-stat">
+        <span class="b-stat-value" id="stat-rate">—</span>
+        <span class="b-stat-label">דיוק</span>
+      </div>
+      <div class="b-stat">
+        <span class="b-stat-value" id="stat-streak">—</span>
+        <span class="b-stat-label">רצף</span>
+      </div>
+    </div>
+
+    <!-- Phase label -->
+    <p class="phase-label" aria-hidden="true">// בחר מטרה • הגש הימור • גלה גורל //</p>
+
+    <!-- Target cards (populated by JS) -->
+    <div
+      class="targets-grid"
+      id="targets-grid"
+      role="list"
+      aria-label="מטרות חיות להימור"
+    ></div>
+
+    <!-- Bet button -->
+    <button
+      class="bet-btn"
+      id="bet-btn"
+      onclick="BettingGame.submitBet()"
+      disabled
+      aria-label="הגש הימור"
+    >
+      🎯 בחר מטרה תחילה
+    </button>
+
+    <!-- History panel -->
+    <section class="history-panel" aria-label="היסטוריית הימורים">
+      <div class="history-header">
+        <span class="history-title">// יומן הימורים //</span>
+      </div>
+      <div class="history-list" id="history-list" role="list" aria-label="הימורים אחרונים"></div>
+    </section>
+
+  </main>
+
+  <!-- ─── Drum-roll Overlay ─── -->
+  <div
+    class="drumroll-overlay"
+    id="drumroll-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="drumroll-label"
+    aria-live="assertive"
+  >
+    <div class="drumroll-box">
+
+      <!-- Label -->
+      <p class="drumroll-label" id="drumroll-label">// מחשב מטרה הבאה //</p>
+
+      <!-- Ticker -->
+      <div class="ticker-display" id="ticker-display" aria-label="גורל מסתובב">
+        <span id="ticker-emoji" aria-hidden="true">🎯</span>
+        <span id="ticker-name">מוכן</span>
+      </div>
+
+      <!-- Bouncing dots (hidden after result) -->
+      <div class="drumroll-dots" id="drumroll-dots" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <!-- Result (slides up after drum-roll) -->
+      <div class="drumroll-result" id="drumroll-result" role="status"></div>
+
+    </div>
+  </div>
+
+  <!-- ─── Scripts ─── -->
+  <script src="../js/cards-loader.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/betting-game.js"></script>
+
+</body>
+</html>

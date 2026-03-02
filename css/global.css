@@ -1,0 +1,332 @@
+/* ==========================================================
+   global.css — HisulArena Design System
+   Aesthetic: Dark Command-Center meets Cartoon Chaos
+   ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=Rubik+Mono+One&family=VT323&display=swap');
+
+/* --- CSS Custom Properties --- */
+:root {
+  /* Colors */
+  --bg:            #0d0d0d;
+  --bg-2:          #111111;
+  --surface:       #171717;
+  --surface-2:     #1f1f1f;
+  --surface-3:     #282828;
+
+  --red:           #cc0000;
+  --red-hot:       #ff2222;
+  --red-dim:       #4d0000;
+  --red-glow:      rgba(204, 0, 0, 0.35);
+  --red-subtle:    rgba(204, 0, 0, 0.08);
+
+  --green:         #22cc77;
+  --green-glow:    rgba(34, 204, 119, 0.3);
+  --green-subtle:  rgba(34, 204, 119, 0.08);
+
+  --gold:          #c8a84b;
+  --gold-glow:     rgba(200, 168, 75, 0.3);
+  --gold-subtle:   rgba(200, 168, 75, 0.08);
+
+  --orange:        #e85d04;
+  --orange-glow:   rgba(232, 93, 4, 0.35);
+  --orange-subtle: rgba(232, 93, 4, 0.08);
+
+  --text:          #ebebeb;
+  --text-dim:      #999;
+  --text-muted:    #555;
+
+  --border:        rgba(204, 0, 0, 0.2);
+  --border-bright: rgba(204, 0, 0, 0.55);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+
+  /* Typography */
+  --font-display:  'Rubik', 'Arial Hebrew', 'Tahoma', sans-serif;
+  --font-mono:     'VT323', 'Courier New', monospace;
+  --font-heavy:    'Rubik Mono One', 'Rubik', sans-serif;
+
+  /* Spacing */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  40px;
+  --space-2xl: 64px;
+
+  /* Shapes */
+  --radius-sm: 3px;
+  --radius:    6px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+
+  /* Motion */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:   cubic-bezier(0.55, 0, 1, 0.45);
+  --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+  --duration:  0.3s;
+
+  /* Shadows */
+  --shadow-sm:    0 2px 8px rgba(0,0,0,0.5);
+  --shadow-md:    0 4px 24px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4);
+  --shadow-lg:    0 8px 48px rgba(0,0,0,0.7);
+  --shadow-red:   0 0 20px var(--red-glow), 0 0 60px rgba(204,0,0,0.1);
+  --shadow-green: 0 0 20px var(--green-glow);
+  --shadow-gold:  0 0 20px var(--gold-glow);
+}
+
+/* --- Reset --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  direction: rtl;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-display);
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* CRT Scanline overlay — stays on top of everything */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.06) 3px,
+    rgba(0, 0, 0, 0.06) 4px
+  );
+  pointer-events: none;
+  z-index: 9997;
+  animation: scanlineFlicker 8s ease-in-out infinite;
+}
+
+@keyframes scanlineFlicker {
+  0%, 95%, 100% { opacity: 1; }
+  96%            { opacity: 0.85; }
+  97%            { opacity: 1; }
+  98%            { opacity: 0.9; }
+}
+
+/* --- Typography --- */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+p { line-height: 1.65; }
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration) var(--ease);
+}
+
+a:hover { color: var(--red-hot); }
+
+img, video, svg {
+  display: block;
+  max-width: 100%;
+}
+
+ul, ol { list-style: none; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* --- Utility Classes --- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mono { font-family: var(--font-mono); }
+
+.text-red   { color: var(--red); }
+.text-green { color: var(--green); }
+.text-gold  { color: var(--gold); }
+.text-muted { color: var(--text-muted); }
+.text-dim   { color: var(--text-dim); }
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--red-dim);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+/* --- Selection --- */
+::selection {
+  background: var(--red);
+  color: #fff;
+}
+
+/* --- Focus visible --- */
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* --- Shared Components --- */
+
+/* Badge / chip */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--red-subtle);
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+
+/* Glowing separator */
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+  border: none;
+  margin: var(--space-lg) 0;
+}
+
+/* Pulsing dot */
+.dot-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red-hot);
+  display: inline-block;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(255,34,34,0.4); }
+  50%       { opacity: 0.75; transform: scale(0.9); box-shadow: 0 0 0 6px rgba(255,34,34,0); }
+}
+
+/* --- Animations — reusable keyframes --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideRight {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Glitch keyframes — used by title */
+@keyframes glitchShift {
+  0%, 88%, 100% { transform: translate(0, 0); filter: none; }
+  89%            { transform: translate(-3px, 0); filter: hue-rotate(90deg); }
+  90%            { transform: translate(3px, 0); }
+  91%            { transform: translate(0, 0); filter: none; }
+  93%            { transform: translate(-2px, 0); }
+  94%            { transform: translate(0, 0); }
+}
+
+@keyframes glitchTop {
+  0%, 88%, 100% { opacity: 0; transform: translate(-3px, 0); }
+  89%, 92%      { opacity: 0.9; }
+  90%           { transform: translate(-3px, -2px); }
+  91%           { transform: translate(3px, 0); }
+  93%           { opacity: 0; }
+}
+
+@keyframes glitchBot {
+  0%, 90%, 100% { opacity: 0; transform: translate(3px, 0); }
+  91%, 94%      { opacity: 0.9; }
+  92%           { transform: translate(3px, 2px); }
+  93%           { transform: translate(-2px, 0); }
+  95%           { opacity: 0; }
+}
+
+/* Radar ping */
+@keyframes radarPing {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.14); opacity: 0; }
+}
+
+/* Slow spin */
+@keyframes slowSpin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ════════════════════════════════════════
+   CARD IMAGE — shared across all games
+   card.image is now a PNG path (root-relative via getImageUrl)
+   ════════════════════════════════════════ */
+.card-img {
+  display: block;
+  object-fit: cover;
+  object-position: center 15%;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+}
+
+/* Memory game — front face emoji slot */
+.front-emoji .card-img                 { width: 64px; height: 72px; }
+/* Memory game — win parade thumbnails */
+.parade-img                            { width: 38px; height: 42px; border-radius: 3px; }
+
+/* Betting game — target card face */
+.target-emoji .card-img                { width: 68px; height: 76px; }
+/* Betting game — drumroll ticker */
+.ticker-img                            { width: 72px; height: 80px; border-radius: 6px; }
+
+/* War game — hand card */
+.wc-emoji .card-img                    { width: 44px; height: 50px; }
+/* War game — battle card (larger, face reveal) */
+.battle-card-front .wc-emoji .card-img { width: 58px; height: 65px; }

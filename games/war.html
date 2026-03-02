@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#cc0000" />
+  <meta name="description" content="מלחמת קלפים – 1v1 קלפי מחוסלים | חיסול ארנה" />
+  <link rel="manifest" href="../manifest.json" />
+  <link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=VT323&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+  <link rel="stylesheet" href="../css/war-game.css" />
+
+  <title>מלחמת קלפים | חיסול ארנה</title>
+</head>
+<body>
+
+  <!-- Background dot grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- ─── Game Header ─── -->
+  <header class="game-header" role="banner">
+    <a href="../index.html" class="btn-back" aria-label="חזרה לדף הבית">
+      <span class="btn-back-arrow">→</span>
+      <span>חזרה</span>
+    </a>
+    <div class="game-header-title">
+      <span class="game-header-icon" aria-hidden="true">⚔️</span>
+      <span>מלחמת קלפים</span>
+    </div>
+    <!-- Spacer to center title -->
+    <div style="width:80px" aria-hidden="true"></div>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       SCREEN 1: LOBBY
+       ══════════════════════════════════════ -->
+  <div id="screen-lobby" class="war-screen active" role="main">
+    <div class="lobby-container">
+
+      <div class="lobby-icon" aria-hidden="true">⚔️</div>
+
+      <h1 class="lobby-title">BATTLEFIELD</h1>
+      <p class="lobby-subtitle">// מלחמת קלפי מחוסלים 1v1 //</p>
+
+      <div class="lobby-form" role="form" aria-label="טופס כניסה למשחק">
+
+        <!-- Player name -->
+        <div class="form-group">
+          <label for="player-name-input">שם שחקן</label>
+          <input
+            type="text"
+            id="player-name-input"
+            class="war-input"
+            placeholder="הכנס שם..."
+            maxlength="16"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="שם שחקן"
+          />
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+
+          <button id="btn-create-room" class="btn-war-primary" aria-label="צור חדר משחק חדש">
+            ⚔️ צור חדר חדש
+          </button>
+
+          <div class="lobby-divider" aria-hidden="true">— OR —</div>
+
+          <!-- Join existing room -->
+          <div class="join-row">
+            <input
+              type="text"
+              id="room-code-input"
+              class="war-input"
+              placeholder="קוד חדר"
+              maxlength="4"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="קוד חדר (4 אותיות)"
+              style="letter-spacing:0.3em;text-align:center"
+            />
+            <button id="btn-join-room" class="btn-war-secondary" aria-label="הצטרף לחדר">
+              הצטרף →
+            </button>
+          </div>
+
+        </div>
+
+        <p id="lobby-error" class="lobby-error" role="alert" aria-live="polite"></p>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN 2: WAITING FOR OPPONENT
+       ══════════════════════════════════════ -->
+  <div id="screen-waiting" class="war-screen" role="main" aria-label="ממתין ליריב">
+    <div class="waiting-container">
+
+      <div class="waiting-radar" aria-hidden="true"></div>
+
+      <p class="waiting-label" aria-hidden="true">// קוד חדר //</p>
+
+      <div
+        class="room-code-display"
+        id="room-code-display"
+        aria-label="קוד החדר שלך"
+        aria-live="polite"
+      >----</div>
+
+      <button id="btn-copy-code" class="btn-copy" aria-label="העתק קוד חדר">
+        📋 העתק
+      </button>
+
+      <p class="waiting-status" id="waiting-status" aria-live="polite">
+        ממתין ליריב...
+      </p>
+
+      <div class="waiting-dots" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN 3: GAME BOARD
+       ══════════════════════════════════════ -->
+  <div id="screen-game" class="war-screen" role="main" aria-label="לוח הקרב">
+
+    <!-- HUD strip -->
+    <div class="war-hud" role="status" aria-live="polite" aria-label="ניקוד ומצב משחק">
+      <div class="hud-player-info">
+        <span class="hud-name" id="opponent-name-display">יריב</span>
+        <span class="hud-score-badge opp" id="hud-score-opp" aria-label="ניקוד יריב">0</span>
+      </div>
+      <div class="hud-round">
+        <span class="hud-round-label">סיבוב</span>
+        <span class="hud-round-value" id="hud-round" aria-label="סיבוב נוכחי">01/04</span>
+      </div>
+      <div class="hud-player-info">
+        <span class="hud-score-badge you" id="hud-score-you" aria-label="הניקוד שלך">0</span>
+        <span class="hud-name" id="player-name-display">אתה</span>
+      </div>
+    </div>
+
+    <!-- Tactical board -->
+    <div class="war-board">
+
+      <!-- Opponent zone (top) -->
+      <div class="opponent-zone" aria-label="קלפי היריב">
+        <span class="zone-label" aria-hidden="true">// יריב //</span>
+        <div
+          class="opponent-hand"
+          id="opponent-hand"
+          role="list"
+          aria-label="קלפי היריב (מסווגים)"
+        ></div>
+      </div>
+
+      <!-- Battle arena (center) -->
+      <div class="battle-arena" aria-label="זירת הקרב" aria-live="assertive">
+        <div class="arena-divider">
+          <span class="arena-vs" aria-hidden="true">⚔ VS ⚔</span>
+        </div>
+        <div class="arena-slots">
+          <div class="arena-slot" id="arena-opponent" aria-label="הקלף של היריב"></div>
+          <div class="arena-slot" id="arena-player"   aria-label="הקלף שלך"></div>
+        </div>
+      </div>
+
+      <!-- Player zone (bottom) -->
+      <div class="player-zone" aria-label="הקלפים שלך">
+        <div
+          class="player-hand"
+          id="player-hand"
+          role="list"
+          aria-label="הקלפים שלך — בחר אחד לשחק"
+        ></div>
+        <button
+          class="btn-play-card"
+          id="btn-play-card"
+          disabled
+          aria-label="שחק קלף נבחר"
+        >
+          ⚔️ בחר קלף לשחק
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Round result banner -->
+    <div class="round-banner" id="round-banner" role="status" aria-live="assertive">
+      <span id="round-banner-text"></span>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN 4: GAME OVER
+       ══════════════════════════════════════ -->
+  <div
+    id="screen-gameover"
+    class="war-screen"
+    role="main"
+    aria-label="סיום משחק"
+    aria-live="polite"
+  >
+    <div class="gameover-container">
+
+      <div class="gameover-result-icon" id="gameover-result-icon" aria-hidden="true">🏆</div>
+
+      <h2 class="gameover-title win" id="gameover-result-title">ניצחת!</h2>
+
+      <p class="gameover-vs">
+        נגד <strong id="gameover-opponent-name">יריב</strong>
+      </p>
+
+      <div class="gameover-scores" aria-label="תוצאות סופיות">
+        <div class="gs-stat">
+          <span class="gs-value" id="gameover-score-you">0</span>
+          <span class="gs-label">הניצחונות שלך</span>
+        </div>
+        <div class="gs-divider" aria-hidden="true">:</div>
+        <div class="gs-stat">
+          <span class="gs-value" id="gameover-score-opp">0</span>
+          <span class="gs-label">ניצחונות יריב</span>
+        </div>
+      </div>
+
+      <div class="gameover-actions">
+        <button
+          class="btn-war-primary"
+          onclick="WarGame.playAgain()"
+          aria-label="חזור לובי למשחק חדש"
+        >
+          🔄 משחק חדש
+        </button>
+        <a
+          href="../index.html"
+          class="btn-war-ghost"
+          aria-label="חזרה לתפריט הראשי"
+        >
+          ← תפריט ראשי
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── Scripts ─── -->
+  <!-- Socket.io client served automatically by server.js -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../js/cards-loader.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/war-game.js"></script>
+
+</body>
+</html>
