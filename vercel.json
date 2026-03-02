@@ -1,15 +1,14 @@
 {
   "version": 2,
-  "outputDirectory": ".",
-  "functions": {
-    "api/socket.js": {
-      "maxDuration": 60
-    }
-  },
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/socket/:path*",
-      "destination": "/api/socket"
+      "src": "**/*",
+      "use": "@vercel/static"
     }
-  ]
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/$1" }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
 }
