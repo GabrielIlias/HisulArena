@@ -8,10 +8,10 @@
     "screenshot:full": "node scripts/screenshot.js --full"
   },
   "dependencies": {
+    "express": "^4.18.2",
     "socket.io": "^4.6.1"
   },
   "devDependencies": {
-    "express": "^4.18.2",
     "puppeteer": "^21.0.0"
   },
   "engines": {

@@ -45,7 +45,14 @@ const WarGame = (() => {
       console.error('[WarGame] socket.io client not loaded — CDN may have failed');
       return;
     }
-    _socket = io({ path: '/api/socket' });
+    // Local dev (served by server.js on :3000) → connect to same origin.
+    // Production (Vercel) → connect to the Railway Socket.io server.
+    // After deploying to Railway, paste your URL below and redeploy.
+    const RAILWAY_URL = 'https://YOUR-APP.railway.app'; // ← update after Railway deploy
+    const _serverUrl  = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+      ? ''            // same origin → http://localhost:3000
+      : RAILWAY_URL;
+    _socket = io(_serverUrl);
     _bindSocketEvents();
     _bindUIEvents();
     _showScreen('screen-lobby');
