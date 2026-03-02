@@ -35,18 +35,11 @@ const WarGame = (() => {
 
   /* ─── Init ─── */
   function init() {
-    // Guard: Socket.io client CDN must have loaded
-    if (typeof io === 'undefined') {
-      const errEl = document.getElementById('lobby-error');
-      if (errEl) {
-        errEl.textContent = 'שגיאה: בעיית טעינה — בדוק חיבור אינטרנט ורענן';
-        errEl.classList.add('show');
-      }
-      console.error('[WarGame] socket.io client not loaded — CDN may have failed');
-      return;
-    }
-    _socket = io({ path: '/api/socket' });
-    _bindSocketEvents();
+    // מולטיפלייר מושבת זמנית — האתר רץ כסטטי מלא על Vercel
+    // To re-enable: uncomment the 3 lines below and restore CDN script in war.html
+    console.log('[WarGame] מולטיפלייר מושבת זמנית ב-Vercel');
+    // _socket = io({ path: '/api/socket' });
+    // _bindSocketEvents();
     _bindUIEvents();
     _showScreen('screen-lobby');
   }
@@ -151,6 +144,7 @@ const WarGame = (() => {
     $('btn-create-room').addEventListener('click', () => {
       const name = ($('player-name-input').value || '').trim();
       if (!name) return _showLobbyError('הכנס שם שחקן');
+      if (!_socket) return _showLobbyError('מולטיפלייר מושבת זמנית — בקרוב!');
       _myName = name;
       _socket.emit('create-room', { playerName: name });
     });
@@ -161,6 +155,7 @@ const WarGame = (() => {
       const code = ($('room-code-input').value || '').trim().toUpperCase();
       if (!name)          return _showLobbyError('הכנס שם שחקן');
       if (code.length !== 4) return _showLobbyError('קוד חדר: 4 אותיות');
+      if (!_socket) return _showLobbyError('מולטיפלייר מושבת זמנית — בקרוב!');
       _myName = name;
       _socket.emit('join-room', { code, playerName: name });
     });
@@ -199,6 +194,7 @@ const WarGame = (() => {
     /* Play card */
     $('btn-play-card').addEventListener('click', () => {
       if (_selectedId == null || _waiting) return;
+      if (!_socket) return;
       const cardId = _selectedId;
       _waiting = true;
 
