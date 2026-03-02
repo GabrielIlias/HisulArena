@@ -124,6 +124,7 @@
 .war-input:focus {
   border-color: var(--red);
   border-bottom-color: var(--red);
+  background: rgba(204,0,0,0.06);
   box-shadow: 0 0 0 1px rgba(204,0,0,0.2), 0 2px 12px rgba(204,0,0,0.1);
 }
 
@@ -233,7 +234,8 @@
   transition: opacity 0.25s, transform 0.25s;
   letter-spacing: 0.05em;
 }
-.lobby-error.show { opacity: 1; transform: translateY(0); }
+.lobby-error.show           { opacity: 1; transform: translateY(0); }
+.lobby-error.lobby-dev-note { color: var(--text-muted); font-size: 0.65rem; }
 
 /* ════════════════════════════════════════
    WAITING SCREEN
@@ -309,7 +311,8 @@
   z-index: 1;
   transition: color 0.2s, border-color 0.2s;
 }
-.btn-copy:hover { color: var(--text); border-color: var(--border); }
+.btn-copy:hover           { color: var(--text); border-color: var(--border); }
+.btn-copy.copied          { color: var(--green); border-color: rgba(34,204,119,0.5); box-shadow: 0 0 10px rgba(34,204,119,0.18); }
 
 .waiting-status {
   font-family: var(--font-mono);
@@ -531,6 +534,8 @@
   letter-spacing: 0.1em;
   text-align: center;
   padding: 8px;
+  border: 1px dashed rgba(224,123,32,0.18);
+  border-radius: var(--radius-sm);
 }
 
 /* ── Player Zone (bottom) ── */
@@ -568,6 +573,7 @@
   cursor: pointer;
   transition: transform 0.2s var(--ease-out), box-shadow 0.2s, opacity 0.2s;
   min-width: 200px;
+  max-width: 100%;
 }
 .btn-play-card:not(:disabled):hover {
   transform: translateY(-2px);

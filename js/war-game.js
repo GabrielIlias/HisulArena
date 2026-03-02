@@ -35,17 +35,17 @@ const WarGame = (() => {
 
   /* ─── Init ─── */
   function init() {
-    // Guard: Socket.io client must be loaded by the server
+    // Guard: Socket.io client CDN must have loaded
     if (typeof io === 'undefined') {
       const errEl = document.getElementById('lobby-error');
       if (errEl) {
-        errEl.textContent = 'שגיאה: הפעל את השרת תחילה — node server.js';
+        errEl.textContent = 'שגיאה: בעיית טעינה — בדוק חיבור אינטרנט ורענן';
         errEl.classList.add('show');
       }
-      console.error('[WarGame] socket.io client not loaded — is the server running?');
+      console.error('[WarGame] socket.io client not loaded — CDN may have failed');
       return;
     }
-    _socket = io();
+    _socket = io({ path: '/api/socket' });
     _bindSocketEvents();
     _bindUIEvents();
     _showScreen('screen-lobby');
@@ -133,7 +133,14 @@ const WarGame = (() => {
     });
 
     _socket.on('connect_error', () => {
-      _showLobbyError('שגיאת חיבור לשרת');
+      // On localhost the /api/socket route doesn't exist — expected in dev mode.
+      // On Vercel production this won't fire.
+      const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (isLocal) {
+        _showDevNote('מצב פיתוח — Socket.io פעיל רק על Vercel');
+      } else {
+        _showLobbyError('שגיאת חיבור לשרת');
+      }
     });
   }
 
@@ -181,7 +188,11 @@ const WarGame = (() => {
       navigator.clipboard.writeText(code).then(() => {
         const btn = $('btn-copy-code');
         btn.textContent = '✓ הועתק!';
-        setTimeout(() => { btn.textContent = '📋 העתק'; }, 2000);
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '📋 העתק';
+          btn.classList.remove('copied');
+        }, 2000);
       });
     });
 
@@ -391,10 +402,19 @@ const WarGame = (() => {
     const el = $('lobby-error');
     if (!el) return;
     el.textContent = msg;
-    el.classList.remove('show');
-    void el.offsetWidth; // reflow
+    el.className = 'lobby-error show';
+    void el.offsetWidth;
     el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 3200);
+  }
+
+  /* ─── Show dev-mode note (grey, not red) ─── */
+  function _showDevNote(msg) {
+    const el = $('lobby-error');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'lobby-error lobby-dev-note show';
+    setTimeout(() => el.classList.remove('show'), 5000);
   }
 
   /* ─── Public: restart → back to lobby ─── */
