@@ -1,15 +1,17 @@
 {
   "version": 2,
-  "outputDirectory": ".",
-  "functions": {
-    "api/socket.js": {
-      "maxDuration": 60
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/socket/:path*",
-      "destination": "/api/socket"
-    }
+  "builds": [
+    { "src": "api/socket.js",     "use": "@vercel/node", "config": { "maxDuration": 60 } },
+    { "src": "index.html",        "use": "@vercel/static" },
+    { "src": "cards.json",        "use": "@vercel/static" },
+    { "src": "manifest.json",     "use": "@vercel/static" },
+    { "src": "service-worker.js", "use": "@vercel/static" },
+    { "src": "games/**",          "use": "@vercel/static" },
+    { "src": "css/**",            "use": "@vercel/static" },
+    { "src": "js/**",             "use": "@vercel/static" },
+    { "src": "assets/**",         "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/socket/(.*)", "dest": "/api/socket" }
   ]
 }
