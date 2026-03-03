@@ -51,7 +51,11 @@ const WarGame = (() => {
     const _serverUrl  = ['localhost', '127.0.0.1'].includes(window.location.hostname)
       ? ''            // same origin → http://localhost:3000
       : RAILWAY_URL;
-    _socket = io(_serverUrl);
+    _socket = io(_serverUrl, {
+      timeout: 60000,           // give Render up to 60s to wake from cold start
+      reconnectionAttempts: 10,
+      reconnectionDelay: 3000,
+    });
     _bindSocketEvents();
     _bindUIEvents();
     _showScreen('screen-lobby');
@@ -138,14 +142,19 @@ const WarGame = (() => {
       setTimeout(() => _showScreen('screen-lobby'), 2500);
     });
 
+    _socket.on('connect', () => {
+      // Clear any waking-up message once connected
+      const el = $('lobby-error');
+      if (el) el.classList.remove('show');
+    });
+
     _socket.on('connect_error', () => {
-      // On localhost the /api/socket route doesn't exist — expected in dev mode.
-      // On Vercel production this won't fire.
       const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
       if (isLocal) {
-        _showDevNote('מצב פיתוח — Socket.io פעיל רק על Vercel');
+        _showDevNote('מצב פיתוח — Socket.io פעיל רק על Render/localhost');
       } else {
-        _showLobbyError('שגיאת חיבור לשרת');
+        // Render free tier sleeps — show amber "waking up" instead of a red error
+        _showWakingUp('מעיר שרת... עד 30 שניות, אנא המתן ⏳');
       }
     });
   }
@@ -157,6 +166,7 @@ const WarGame = (() => {
     $('btn-create-room').addEventListener('click', () => {
       const name = ($('player-name-input').value || '').trim();
       if (!name) return _showLobbyError('הכנס שם שחקן');
+      if (!_socket.connected) return _showWakingUp('השרת מתעורר... נסה שוב בעוד שנייה ⏳');
       _myName = name;
       _socket.emit('create-room', { playerName: name });
     });
@@ -165,8 +175,9 @@ const WarGame = (() => {
     $('btn-join-room').addEventListener('click', () => {
       const name = ($('player-name-input').value || '').trim();
       const code = ($('room-code-input').value || '').trim().toUpperCase();
-      if (!name)          return _showLobbyError('הכנס שם שחקן');
+      if (!name)             return _showLobbyError('הכנס שם שחקן');
       if (code.length !== 4) return _showLobbyError('קוד חדר: 4 אותיות');
+      if (!_socket.connected) return _showWakingUp('השרת מתעורר... נסה שוב בעוד שנייה ⏳');
       _myName = name;
       _socket.emit('join-room', { code, playerName: name });
     });
@@ -421,6 +432,14 @@ const WarGame = (() => {
     el.textContent = msg;
     el.className = 'lobby-error lobby-dev-note show';
     setTimeout(() => el.classList.remove('show'), 5000);
+  }
+
+  /* ─── Show waking-up notice (amber, stays until connected) ─── */
+  function _showWakingUp(msg) {
+    const el = $('lobby-error');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'lobby-error lobby-waking-up show';
   }
 
   /* ─── Public: restart → back to lobby ─── */

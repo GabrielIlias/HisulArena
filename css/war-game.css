@@ -234,8 +234,9 @@
   transition: opacity 0.25s, transform 0.25s;
   letter-spacing: 0.05em;
 }
-.lobby-error.show           { opacity: 1; transform: translateY(0); }
-.lobby-error.lobby-dev-note { color: var(--text-muted); font-size: 0.65rem; }
+.lobby-error.show            { opacity: 1; transform: translateY(0); }
+.lobby-error.lobby-dev-note  { color: var(--text-muted); font-size: 0.65rem; }
+.lobby-error.lobby-waking-up { color: #f59e0b; }
 
 /* ════════════════════════════════════════
    WAITING SCREEN
